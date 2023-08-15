@@ -4,6 +4,7 @@ var ctx = cnv.getContext("2d");
 var data = ctx.createImageData(600,600);
 var buf = new Uint32Array(data.data.buffer);
 
+// https://stackoverflow.com/questions/39213661/canvas-using-uint32array-wrong-colors-are-being-rendered
 function reverseUint32 (uint32) {
     var s32 = new Uint32Array(4);
     var s8 = new Uint8Array(s32.buffer);
@@ -20,7 +21,7 @@ function reverseUint32 (uint32) {
     return reverseUint32(uint32);
 };
 
-function bresenham(x0, y0, x1, y1) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
+function bresenham(x0, y0, x1, y1, col) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
 {
     var dx =  Math.abs(x1-x0), sx = x0<x1 ? 1 : -1;
     var dy = -Math.abs(y1-y0), sy = y0<y1 ? 1 : -1;
@@ -28,11 +29,7 @@ function bresenham(x0, y0, x1, y1) // https://de.wikipedia.org/wiki/Bresenham-Al
 
     while (true)
     {
-//        var randomColor = Math.floor(Math.random()*16777215).toString(16);
-//        var randomColor = "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0");
-        var randomColor = reverseUint32(0xff80d7ff);//(16777215 * Math.random() | 0));
-//        var randomColor = '#' + Math.random().toString(16).substr(-6);
-        buf[y0*600+x0]=randomColor;//0xFF000000;
+        buf[y0*600+x0]=col;
 
         if (x0==x1 && y0==y1) break;
         e2 = 2*err;
@@ -41,7 +38,7 @@ function bresenham(x0, y0, x1, y1) // https://de.wikipedia.org/wiki/Bresenham-Al
     }
 }
 
-function bresenham_arr(x0, y0, x1, y1, xarr) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
+function bresenham_arr(x0, y0, x1, y1, xarr, col) // https://de.wikipedia.org/wiki/Bresenham-Algorithmus
 {
   var dx = Math.abs(x1 - x0), sx = x0<x1 ? 1 : -1;
   var dy = -Math.abs(y1 - y0), sy = y0<y1 ? 1 : -1;
@@ -49,7 +46,7 @@ function bresenham_arr(x0, y0, x1, y1, xarr) // https://de.wikipedia.org/wiki/Br
 
   while (true)
   {
-    buf[y0*600+x0]=0xFF000000;
+    buf[y0*600+x0]=col;
     xarr[y0] = x0; // <-- wichtig! x-pos merken!
 
     if (x0 == x1 && y0 == y1) break;
@@ -103,26 +100,86 @@ function triangle_filled(x0,y0,x1,y1,x2,y2, col)
   bresenham_arr(middle.x, middle.y, bottom.x, bottom.y, xarr, col);
   for (var y = top.y; y < bottom.y; y++)
   {
-    bresenham(xarr[y], y, xarr2[y], y);//, col); // man kann sogar noch einfacher mit x-Schleife schreiben
+    bresenham(xarr[y], y, xarr2[y], y, col); // man kann sogar noch einfacher mit x-Schleife schreiben
   }
 }
 
 function lesson2() // draw 3 filled triangles
 {
 
-  triangle_filled(10,70, 50,160,70,80);
-  triangle_filled(180,50,150,1,70,180);
-  triangle_filled(180,150,120,160,130,180);
+  triangle_filled(10,70, 50,160,70,80, reverseUint32(0xff0000ff)); // r
+  triangle_filled(180,50,150,1,70,180, reverseUint32(0x00ff00ff)); // g
+  triangle_filled(180,150,120,160,130,180, reverseUint32(0x0000ffff)); // b
 }
 
 //setInterval(function(){
   var start=Date.now();
-    bresenham(20,20,200,400);
+    bresenham(20,20,200,400, reverseUint32(0x00ff00ff));
 
 //    bresenham(Math.floor(Math.random()*100),Math.floor(Math.random()*100),Math.floor(Math.random()*10),Math.floor(Math.random()*10));
     lesson2();
 
-  ctx.putImageData(data,0,0);
+    var p0 = vec2(100,100);
+    var p1 = vec2(150,100);
+    var p2 = vec2(150,150);
+    var p3 = vec2(100,150);
+    col = reverseUint32(0x0000ffff);
+    buf[p0.y*600+p0.x]=col;//randomColor;//0xFF000000;
+    buf[p1.y*600+p1.x]=col;//randomColor;//0xFF000000;
+    buf[p2.y*600+p2.x]=col;//randomColor;//0xFF000000;
+    buf[p3.y*600+p3.x]=col;//randomColor;//0xFF000000;
+    triangle_filled(p0.x,p0.y, p1.x,p1.y,p2.x,p2.y, reverseUint32(0xff0000ff)); // r
+    triangle_filled(p2.x,p2.y, p3.x,p3.y,p0.x,p0.y, reverseUint32(0xff0000ff)); // r
+
+  /*  z = 10;
+    f = 5.0;
+    var pp0 = vec2(f*p0.x/z,f*p0.y/z);
+    var pp1 = vec2(f*p1.x/z,f*p1.y/z);
+    var pp2 = vec2(f*p2.x/z,f*p2.y/z);
+    var pp3 = vec2(f*p3.x/z,f*p3.y/z);
+    buf[pp0.y*600+pp0.x]=col;//randomColor;//0xFF000000;
+    buf[pp1.y*600+pp1.x]=col;//randomColor;//0xFF000000;
+    buf[pp2.y*600+pp2.x]=col;//randomColor;//0xFF000000;
+    buf[pp3.y*600+pp3.x]=col;//randomColor;//0xFF000000;
+    */
+
+    var p0 = new vec3(100,100,10);
+    var p1 = new vec3(150,100,20);
+    var p2 = new vec3(150,150,20);
+    var p3 = new vec3(100,150,10);
+    f = 5.0;
+    var pp0 = vec2(f*p0.x/p0.z,f*p0.y/p0.z);
+    var pp1 = vec2(f*p1.x/p0.z,f*p1.y/p0.z);
+    var pp2 = vec2(f*p2.x/p0.z,f*p2.y/p0.z);
+    var pp3 = vec2(f*p3.x/p0.z,f*p3.y/p0.z);
+    buf[pp0.y*600+pp0.x]=col;
+    buf[pp1.y*600+pp1.x]=col;
+    buf[pp2.y*600+pp2.x]=col;
+    buf[pp3.y*600+pp3.x]=col;
+    triangle_filled(pp0.x,pp0.y, pp1.x,pp1.y,pp2.x,pp2.y, reverseUint32(0xff0ff0ff)); // r
+    triangle_filled(pp2.x,pp2.y, pp3.x,pp3.y,pp0.x,pp0.y, reverseUint32(0xff0ff0ff)); // r
+
+
+    var p0 = new vec3(-30,30,1);
+    var p1 = new vec3(30,30,1);
+    var p2 = new vec3(30,-30,1);
+    var p3 = new vec3(-30,-30,1);
+    f = 1.0;
+    var pp0 = vec2(100+f*p0.x/p0.z,100+f*p0.y/p0.z);
+    var pp1 = vec2(100+f*p1.x/p0.z,100+f*p1.y/p0.z);
+    var pp2 = vec2(100+f*p2.x/p0.z,100+f*p2.y/p0.z);
+    var pp3 = vec2(100+f*p3.x/p0.z,100+f*p3.y/p0.z);
+    buf[pp0.y*600+pp0.x]=col;
+    buf[pp1.y*600+pp1.x]=col;
+    buf[pp2.y*600+pp2.x]=col;
+    buf[pp3.y*600+pp3.x]=col;
+    triangle_filled(pp0.x,pp0.y, pp1.x,pp1.y,pp2.x,pp2.y, reverseUint32(0xff0ff0ff)); // r
+    triangle_filled(pp2.x,pp2.y, pp3.x,pp3.y,pp0.x,pp0.y, reverseUint32(0xff0ff0ff)); // r
+
+
+
+
+    ctx.putImageData(data,0,0);
   t.innerText="Frame time:"+(Date.now()-start)+"ms";
 //},20);
 
