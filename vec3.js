@@ -34,7 +34,7 @@ class vec3 {
   }
 
   floored () {
-    return new Vec3(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z))
+    return new vec3(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z))
   }
 
   floor () {
@@ -45,7 +45,7 @@ class vec3 {
   }
 
   offset (dx, dy, dz) {
-    return new Vec3(this.x + dx, this.y + dy, this.z + dz)
+    return new vec3(this.x + dx, this.y + dy, this.z + dz)
   }
 
   translate (dx, dy, dz) {
@@ -92,11 +92,11 @@ class vec3 {
   }
 
   scaled (scalar) {
-    return new Vec3(this.x * scalar, this.y * scalar, this.z * scalar)
+    return new v(this.x * scalar, this.y * scalar, this.z * scalar)
   }
 
   abs () {
-    return new Vec3(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z))
+    return new vec3(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z))
   }
 
   volume () {
@@ -104,7 +104,7 @@ class vec3 {
   }
 
   modulus (other) {
-    return new Vec3(
+    return new vec3(
       euclideanMod(this.x, other.x),
       euclideanMod(this.y, other.y),
       euclideanMod(this.z, other.z))
@@ -137,11 +137,11 @@ class vec3 {
   }
 
   min (other) {
-    return new Vec3(Math.min(this.x, other.x), Math.min(this.y, other.y), Math.min(this.z, other.z))
+    return new vec3(Math.min(this.x, other.x), Math.min(this.y, other.y), Math.min(this.z, other.z))
   }
 
   max (other) {
-    return new Vec3(Math.max(this.x, other.x), Math.max(this.y, other.y), Math.max(this.z, other.z))
+    return new vec3(Math.max(this.x, other.x), Math.max(this.y, other.y), Math.max(this.z, other.z))
   }
 
   norm () {
@@ -153,7 +153,7 @@ class vec3 {
   }
 
   cross (other) {
-    return new Vec3(this.y * other.z - this.z * other.y, this.z * other.x - this.x * other.z, this.x * other.y - this.y * other.x)
+    return new vec3(this.y * other.z - this.z * other.y, this.z * other.x - this.x * other.z, this.x * other.y - this.y * other.x)
   }
 
   unit () {
@@ -223,7 +223,7 @@ function v (x, y, z) {
   } else if (typeof x === 'string' && y == null) {
     const match = x.match(re)
     if (match) {
-      return new Vec3(
+      return new vec3(
         parseFloat(match[1]),
         parseFloat(match[2]),
         parseFloat(match[3]))
