@@ -104,74 +104,7 @@ function triangle_filled(x0,y0,x1,y1,x2,y2, col)
   }
 }
 
-function lesson2() // draw 3 filled triangles
-{
-
-  triangle_filled(10,70, 50,160,70,80, reverseUint32(0xff0000ff)); // r
-  triangle_filled(180,50,150,1,70,180, reverseUint32(0x00ff00ff)); // g
-  triangle_filled(180,150,120,160,130,180, reverseUint32(0x0000ffff)); // b
-}
-
-function draw_quads()
-{
-  var p0 = vec2(100,100);
-  var p1 = vec2(150,100);
-  var p2 = vec2(150,150);
-  var p3 = vec2(100,150);
-  col = reverseUint32(0x0000ffff);
-  buf[p0.y*600+p0.x]=col;//randomColor;//0xFF000000;
-  buf[p1.y*600+p1.x]=col;//randomColor;//0xFF000000;
-  buf[p2.y*600+p2.x]=col;//randomColor;//0xFF000000;
-  buf[p3.y*600+p3.x]=col;//randomColor;//0xFF000000;
-  triangle_filled(p0.x,p0.y, p1.x,p1.y,p2.x,p2.y, reverseUint32(0xff0000ff)); // r
-  triangle_filled(p2.x,p2.y, p3.x,p3.y,p0.x,p0.y, reverseUint32(0xff0000ff)); // r
-
-/*  z = 10;
-  f = 5.0;
-  var pp0 = vec2(f*p0.x/z,f*p0.y/z);
-  var pp1 = vec2(f*p1.x/z,f*p1.y/z);
-  var pp2 = vec2(f*p2.x/z,f*p2.y/z);
-  var pp3 = vec2(f*p3.x/z,f*p3.y/z);
-  buf[pp0.y*600+pp0.x]=col;//randomColor;//0xFF000000;
-  buf[pp1.y*600+pp1.x]=col;//randomColor;//0xFF000000;
-  buf[pp2.y*600+pp2.x]=col;//randomColor;//0xFF000000;
-  buf[pp3.y*600+pp3.x]=col;//randomColor;//0xFF000000;
-  */
-
-  var p0 = new vec3(100,100,10);
-  var p1 = new vec3(150,100,20);
-  var p2 = new vec3(150,150,20);
-  var p3 = new vec3(100,150,10);
-  f = 5.0;
-  var pp0 = vec2(f*p0.x/p0.z,f*p0.y/p0.z);
-  var pp1 = vec2(f*p1.x/p0.z,f*p1.y/p0.z);
-  var pp2 = vec2(f*p2.x/p0.z,f*p2.y/p0.z);
-  var pp3 = vec2(f*p3.x/p0.z,f*p3.y/p0.z);
-  buf[pp0.y*600+pp0.x]=col;
-  buf[pp1.y*600+pp1.x]=col;
-  buf[pp2.y*600+pp2.x]=col;
-  buf[pp3.y*600+pp3.x]=col;
-  triangle_filled(pp0.x,pp0.y, pp1.x,pp1.y,pp2.x,pp2.y, reverseUint32(0xff0ff0ff)); // r
-  triangle_filled(pp2.x,pp2.y, pp3.x,pp3.y,pp0.x,pp0.y, reverseUint32(0xff0ff0ff)); // r
-
-
-  var p0 = new vec3(-30,30,1);
-  var p1 = new vec3(30,30,1);
-  var p2 = new vec3(30,-30,1);
-  var p3 = new vec3(-30,-30,1);
-  f = 1.0;
-  var pp0 = vec2(100+f*p0.x/p0.z,100+f*p0.y/p0.z);
-  var pp1 = vec2(100+f*p1.x/p0.z,100+f*p1.y/p0.z);
-  var pp2 = vec2(100+f*p2.x/p0.z,100+f*p2.y/p0.z);
-  var pp3 = vec2(100+f*p3.x/p0.z,100+f*p3.y/p0.z);
-  buf[pp0.y*600+pp0.x]=col;
-  buf[pp1.y*600+pp1.x]=col;
-  buf[pp2.y*600+pp2.x]=col;
-  buf[pp3.y*600+pp3.x]=col;
-  triangle_filled(pp0.x,pp0.y, pp1.x,pp1.y,pp2.x,pp2.y, reverseUint32(0xff0ff0ff)); // r
-  triangle_filled(pp2.x,pp2.y, pp3.x,pp3.y,pp0.x,pp0.y, reverseUint32(0xff0ff0ff)); // r
-}
-bars = 3;
+bars = 30;
 barwdth = 10;
 const piano_up = new Array(20);
 //const piano_low = new Array(10);
@@ -182,26 +115,7 @@ const piano_up = new Array(20);
 }*/
 bufidx = 0;
 
-setInterval(function(){
-  var start=Date.now();
-//    bresenham(20,20,200,400, reverseUint32(0x00ff00ff));
-
-//    var p0 = vec2(100,100);
-//    var p1 = vec2(150,100);
-
-//    bresenham(Math.floor(Math.random()*100),Math.floor(Math.random()*100),Math.floor(Math.random()*10),Math.floor(Math.random()*10));
-//    lesson2();
-
-//    draw_quads();
-sl = slider.value;
-for (i=0;i<=bars;i++) {
-piano_up[i] = (i+sl)*10;
-//piano_up[i] = (i*10)+sl;
-}
-    for (j=0;j<bars;j++)
-{
-  i = j;
-  i2 = (j+1);
+function draw_bar(i,i2) {
   var p0 = vec2(piano_up[i],10);
   var p1 = vec2(piano_up[i2],10);
   var p2 = vec2(piano_up[i2],100); // 2do: low
@@ -214,6 +128,21 @@ piano_up[i] = (i+sl)*10;
   triangle_filled(p0.x,p0.y, p1.x,p1.y,p2.x,p2.y, col); // r
   triangle_filled(p2.x,p2.y, p3.x,p3.y,p0.x,p0.y, col); // r
 }
+
+setInterval(function(){
+  var start=Date.now();
+  
+  sl = parseInt(slider.value);
+
+  for (i=0;i<=bars;i++) {
+  //  piano_up[i] = (i+sl)*10;
+    piano_up[i] = (i*10)+sl;
+  }
+  for (j=0;j<bars;j++) {
+    i = j;
+    i2 = (j+1);
+    draw_bar(i,i2);
+  }
 /*
 for (i=0;i<bars;i++)
 {
