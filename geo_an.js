@@ -104,23 +104,24 @@ function triangle_filled(x0,y0,x1,y1,x2,y2, col)
   }
 }
 
-bars = 30;
+
+const max_bars = 30
+bars = 3;
 barwdth = 10;
-const piano_up = new Array(20);
+const piano_up = new Array(max_bars);
 //const piano_low = new Array(10);
-/*for (i=0;i<=bars;i++)
+for (i=0;i<=bars;i++)
 {
-  piano_up[i] = i*10;
+  piano_up[i] = i*barwdth;
 //  piano_low[i] = i*15;
-}*/
+}
 bufidx = 0;
 
-function draw_bar(i,i2) {
-  var p0 = vec2(piano_up[i],10);
-  var p1 = vec2(piano_up[i2],10);
-  var p2 = vec2(piano_up[i2],100); // 2do: low
-  var p3 = vec2(piano_up[i],100); // 2do: low
-  if (i%2==1) col = reverseUint32(0x0000ffff); else col = reverseUint32(0xff00ffff);
+function draw_bar(x1,x2,col) {
+  var p0 = vec2(x1,10);
+  var p1 = vec2(x2,10);
+  var p2 = vec2(x2,100); // 2do: low
+  var p3 = vec2(x1,100); // 2do: low
   buf[p0.y*600+p0.x]=col;
   buf[p1.y*600+p1.x]=col;
   buf[p2.y*600+p2.x]=col;
@@ -134,14 +135,23 @@ setInterval(function(){
   
   sl = parseInt(slider.value);
 
-  for (i=0;i<=bars;i++) {
+/*  for (i=0;i<=bars;i++) {
   //  piano_up[i] = (i+sl)*10;
     piano_up[i] = (i*10)+sl;
   }
+*/
   for (j=0;j<bars;j++) {
-    i = j;
-    i2 = (j+1);
-    draw_bar(i,i2);
+    x1 = piano_up[j]+sl;
+    x2 = piano_up[j+1]+sl;
+    if (j%2==1) col = reverseUint32(0x0000ffff); else col = reverseUint32(0xff00ffff);
+//    col = reverseUint32(Math.random()*16777215);
+    if (x2 > (bars*barwdth)) {
+      xtmp = (bars*barwdth);
+      draw_bar(x1,xtmp,col);
+      xtmp = 0;
+      draw_bar(xtmp,piano_up[0]+sl,col);
+    }
+    draw_bar(x1, x2, col);
   }
 /*
 for (i=0;i<bars;i++)
