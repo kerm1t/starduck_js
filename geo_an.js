@@ -171,14 +171,16 @@ function draw_quads()
   triangle_filled(pp0.x,pp0.y, pp1.x,pp1.y,pp2.x,pp2.y, reverseUint32(0xff0ff0ff)); // r
   triangle_filled(pp2.x,pp2.y, pp3.x,pp3.y,pp0.x,pp0.y, reverseUint32(0xff0ff0ff)); // r
 }
-
+bars = 3;
+barwdth = 10;
 const piano_up = new Array(20);
-const piano_low = new Array(10);
-for (i=0;i<10;i++)
+//const piano_low = new Array(10);
+/*for (i=0;i<=bars;i++)
 {
   piano_up[i] = i*10;
-  piano_low[i] = i*15;
-}
+//  piano_low[i] = i*15;
+}*/
+bufidx = 0;
 
 setInterval(function(){
   var start=Date.now();
@@ -189,24 +191,21 @@ setInterval(function(){
 
 //    bresenham(Math.floor(Math.random()*100),Math.floor(Math.random()*100),Math.floor(Math.random()*10),Math.floor(Math.random()*10));
 //    lesson2();
-for (i=0;i<9;i++)
-{
-  piano_up[i]+=1;
-//  piano_up[i+1]+=1;
-  piano_low[i ]+=2;
-//  piano_low[i+1]+=2;Y qwertaASRTZU
-  if (piano_up[i]>200) piano_up[i]=0;
-  if (piano_low[i]>200) piano_low[i]=0;
-//  var p2 = vec2(piano_low[i+1],100);
-//  var p3 = vec2(piano_low[i],100);
-}
+
 //    draw_quads();
-for (i=0;i<9;i++)
+sl = slider.value;
+for (i=0;i<=bars;i++) {
+piano_up[i] = (i+sl)*10;
+//piano_up[i] = (i*10)+sl;
+}
+    for (j=0;j<bars;j++)
 {
+  i = j;
+  i2 = (j+1);
   var p0 = vec2(piano_up[i],10);
-  var p1 = vec2(piano_up[i+1],10);
-  var p2 = vec2(piano_low[i+1],100);
-  var p3 = vec2(piano_low[i],100);
+  var p1 = vec2(piano_up[i2],10);
+  var p2 = vec2(piano_up[i2],100); // 2do: low
+  var p3 = vec2(piano_up[i],100); // 2do: low
   if (i%2==1) col = reverseUint32(0x0000ffff); else col = reverseUint32(0xff00ffff);
   buf[p0.y*600+p0.x]=col;
   buf[p1.y*600+p1.x]=col;
@@ -214,9 +213,19 @@ for (i=0;i<9;i++)
   buf[p3.y*600+p3.x]=col;
   triangle_filled(p0.x,p0.y, p1.x,p1.y,p2.x,p2.y, col); // r
   triangle_filled(p2.x,p2.y, p3.x,p3.y,p0.x,p0.y, col); // r
-
 }
-
+/*
+for (i=0;i<bars;i++)
+{
+  piano_up[i]+=1;
+//  piano_low[i]+=2;
+  if (piano_up[i]>(bars*barwdth)) {
+    piano_up[i]=(piano_up[0]%(bars*barwdth));
+    bufidx = i;
+  }
+//  if (piano_low[i]>200) piano_low[i]=piano_low[0]-20;
+}
+*/
     ctx.putImageData(data,0,0);
   t.innerText="Frame time:"+(Date.now()-start)+"ms";
 },20);
