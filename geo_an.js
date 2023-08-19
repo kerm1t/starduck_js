@@ -110,24 +110,25 @@ const max_bars = 30
 bars = 8; // multiple of 2
 barwdth = 10;
 const piano_init = new Array(max_bars+1);
+const piano_init_low = new Array(max_bars+1);
 const piano_col = new Array(max_bars+1)
 var piano_up = new Array(max_bars+1);
-//const piano_low = new Array(10);
+var piano_low = new Array(max_bars+1);
 for (i=0;i<=bars;i++)
 {
   piano_init[i] = i*barwdth;
-//  piano_low[i] = i*barwdth+5;
+  piano_init_low[i] = -30+i*barwdth+5;
   if (i%2==1) piano_col[i] = reverseUint32(0x0000ffff); else piano_col[i] = reverseUint32(0xff00ffff);
 }
 bufidx = 0;
 var x1 = new Array(max_bars+1);
 var x2 = new Array(max_bars+1);
 
-function draw_bar(x1,x2,col) {
+function draw_bar(x1,x2,x3,x4,col) {
   var p0 = vec2(x1,10);
   var p1 = vec2(x2,10);
-  var p2 = vec2(x2,100); // 2do: low
-  var p3 = vec2(x1,100); // 2do: low
+  var p2 = vec2(x4,100); // low
+  var p3 = vec2(x3,100); // low
   buf[p0.y*600+p0.x]=col;
   buf[p1.y*600+p1.x]=col;
   buf[p2.y*600+p2.x]=col;
@@ -143,13 +144,16 @@ setInterval(function(){
   var start = 0;
   for (j=0;j<=bars;j++) {
     piano_up[j]=(piano_init[j]+sl) % (bars*barwdth+1);
-    if (piano_up[j] < piano_up[start]) { start = j; chg = 1-chg; }// start with smallest x-value
+    piano_low[j]=(piano_init_low[j]+sl*2) % (bars*barwdth+5+1);
+    if (piano_up[j] < piano_up[start]) start = j; // start with smallest x-value
   }
 
   for (i=0;i<bars;i++) {
     j = start+i;
     x1 = piano_up[j%(bars+1)];
     x2 = piano_up[(j+1)%(bars+1)];
+    x3 = piano_low[j%(bars+1)];
+    x4 = piano_low[(j+1)%(bars+1)];
     col = piano_col[j%(bars+1)];
     if (x2 > (bars*barwdth+1)) {
       xtmp = (bars*barwdth+1);
@@ -157,7 +161,7 @@ setInterval(function(){
       xtmp = 0;
       draw_bar(xtmp,piano_up[0]+sl,col);
     }
-    draw_bar(x1, x2, col);
+    draw_bar(x1, x2, x3,x4,col);
   }
   ctx.putImageData(data,0,0);
 
