@@ -17,7 +17,8 @@ function draw(x1,y1,x2,y2){
 
 var cnt=0;
 setInterval(function(){
-  cnt++;
+//  cnt++;
+  cnt = parseInt(slider.value);
   var start=Date.now();
   draw(300+300*Math.sin(cnt*Math.PI/180),
        300+300*Math.cos(cnt*Math.PI/180),
