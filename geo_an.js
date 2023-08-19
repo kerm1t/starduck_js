@@ -1,6 +1,7 @@
 //import { vec2 } from "./vec2.js";
 
 var ctx = cnv.getContext("2d");
+ctx.font = "12px Arial";
 var data = ctx.createImageData(600,600);
 var buf = new Uint32Array(data.data.buffer);
 
@@ -106,16 +107,21 @@ function triangle_filled(x0,y0,x1,y1,x2,y2, col)
 
 
 const max_bars = 30
-bars = 3;
+bars = 8; // multiple of 2
 barwdth = 10;
-const piano_up = new Array(max_bars);
+const piano_init = new Array(max_bars+1);
+const piano_col = new Array(max_bars+1)
+var piano_up = new Array(max_bars+1);
 //const piano_low = new Array(10);
 for (i=0;i<=bars;i++)
 {
-  piano_up[i] = i*barwdth;
-//  piano_low[i] = i*15;
+  piano_init[i] = i*barwdth;
+//  piano_low[i] = i*barwdth+5;
+  if (i%2==1) piano_col[i] = reverseUint32(0x0000ffff); else piano_col[i] = reverseUint32(0xff00ffff);
 }
 bufidx = 0;
+var x1 = new Array(max_bars+1);
+var x2 = new Array(max_bars+1);
 
 function draw_bar(x1,x2,col) {
   var p0 = vec2(x1,10);
@@ -129,43 +135,36 @@ function draw_bar(x1,x2,col) {
   triangle_filled(p0.x,p0.y, p1.x,p1.y,p2.x,p2.y, col); // r
   triangle_filled(p2.x,p2.y, p3.x,p3.y,p0.x,p0.y, col); // r
 }
-
+var chg = 0;
 setInterval(function(){
-  var start=Date.now();
+  var t_start=Date.now();
   
   sl = parseInt(slider.value);
-
-/*  for (i=0;i<=bars;i++) {
-  //  piano_up[i] = (i+sl)*10;
-    piano_up[i] = (i*10)+sl;
+  var start = 0;
+  for (j=0;j<=bars;j++) {
+    piano_up[j]=(piano_init[j]+sl) % (bars*barwdth+1);
+    if (piano_up[j] < piano_up[start]) { start = j; chg = 1-chg; }// start with smallest x-value
   }
-*/
-  for (j=0;j<bars;j++) {
-    x1 = piano_up[j]+sl;
-    x2 = piano_up[j+1]+sl;
-    if (j%2==1) col = reverseUint32(0x0000ffff); else col = reverseUint32(0xff00ffff);
-//    col = reverseUint32(Math.random()*16777215);
-    if (x2 > (bars*barwdth)) {
-      xtmp = (bars*barwdth);
+
+  for (i=0;i<bars;i++) {
+    j = start+i;
+    x1 = piano_up[j%(bars+1)];
+    x2 = piano_up[(j+1)%(bars+1)];
+    col = piano_col[j%(bars+1)];
+    if (x2 > (bars*barwdth+1)) {
+      xtmp = (bars*barwdth+1);
       draw_bar(x1,xtmp,col);
       xtmp = 0;
       draw_bar(xtmp,piano_up[0]+sl,col);
     }
     draw_bar(x1, x2, col);
   }
-/*
-for (i=0;i<bars;i++)
-{
-  piano_up[i]+=1;
-//  piano_low[i]+=2;
-  if (piano_up[i]>(bars*barwdth)) {
-    piano_up[i]=(piano_up[0]%(bars*barwdth));
-    bufidx = i;
-  }
-//  if (piano_low[i]>200) piano_low[i]=piano_low[0]-20;
-}
-*/
-    ctx.putImageData(data,0,0);
-  t.innerText="Frame time:"+(Date.now()-start)+"ms";
-},20);
+  ctx.putImageData(data,0,0);
 
+  t.innerText="Frame time:"+(Date.now()-t_start)+"ms";
+  for (j=0;j<=bars;j++) {
+    ctx.fillText(piano_up[j], 100, 100+j*12);
+  }
+  ctx.fillText("start: "+start, 100, 88);
+
+  },20);
